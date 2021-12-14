@@ -5,7 +5,7 @@ module.exports = {
       host: 'localhost',
       user: 'postgres',
       password: '2917',
-      database: 'pessoal',
+      database: 'tripacc',
     },
     debug: false,
     migrations: {
