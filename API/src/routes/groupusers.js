@@ -24,8 +24,8 @@ module.exports = (app) => {
       .catch((err) => next(err));
   });
 
-  router.get('/:id_group', (req, res, next) => {
-    app.services.groupMembers.findGroup({ id: req.params.id })
+  router.get('/all/:id_group', (req, res, next) => {
+    app.services.groupMembers.findGroup({ id_group: req.params.id_group })
       .then((result) => res.status(200).json(result))
       .catch((err) => next(err));
   });

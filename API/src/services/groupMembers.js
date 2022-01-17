@@ -6,8 +6,8 @@ module.exports = (app) => {
   };
 
   const save = async (groupusers) => {
-    if (!groupusers.id_user) throw new ValidationError('A Moeda é um atributo obrigatório');
-    if (!groupusers.id_group) throw new ValidationError('Nome é um atributo obrigatório');
+    if (!groupusers.id_user) throw new ValidationError('O id user é obrigatorio');
+    if (!groupusers.id_group) throw new ValidationError('Grupo é um atributo obrigatório');
     return app.db('group_users').insert(groupusers, '*');
   };
 
@@ -15,10 +15,10 @@ module.exports = (app) => {
     return app.db('group_users').where(filter).select();
   };
 
-  const findGroup = (id) => {
-    return app.db('group_users')
-      .where({ id })
-      .select(['*']);
+  // eslint-disable-next-line camelcase
+  const findGroup = (id_group) => {
+    console.log('entrou');
+    return app.db('group_users', 'users').where(id_group).select();
   };
 
   const update = (id, groupusers) => {

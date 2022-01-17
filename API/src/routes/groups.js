@@ -31,7 +31,7 @@ module.exports = (app) => {
   });
 
   router.delete('/:id', (req, res, next) => {
-    app.services.group.remove(req.params.id)
+    app.services.group.remove(req.params.id, req.params.id_group)
       .then(() => res.status(204).send())
       .catch((err) => next(err));
   });
