@@ -17,7 +17,6 @@ module.exports = (app) => {
 
   // eslint-disable-next-line camelcase
   const findGroup = (id_group) => {
-    console.log('entrou');
     return app.db('group_users', 'users').where(id_group).select();
   };
 
