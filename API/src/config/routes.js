@@ -11,7 +11,7 @@ module.exports = (app) => {
     .all(app.config.passport.authenticate())
     .get(app.routes.users.findAll)
     .post(app.routes.users.create)
-    .delete(app.routes.accounts.remove);
+    .delete(app.routes.users.remove);
 
   app.route('/groups')
     .get(app.routes.groups.findAll)
@@ -26,7 +26,8 @@ module.exports = (app) => {
 
   app.route('/groupusers')
     .all(app.config.passport.authenticate())
-    .get(app.routes.despesas.findAll)
-    .post(app.routes.despesas.create)
-    .delete(app.routes.despesas.remove);
+    .get(app.routes.groupusers.findAll)
+    .post(app.routes.groupusers.create)
+    .delete(app.routes.groupusers.remove)
+    .get(app.routes.groupusers.findGroup);
 };

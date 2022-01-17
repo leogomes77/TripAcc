@@ -22,7 +22,11 @@ module.exports = (app) => {
       .update(group, '*');
   };
 
-  const remove = (id) => {
+  // eslint-disable-next-line camelcase
+  const remove = (id, id_group) => {
+    app.db('group_users')
+      .where({ id_group })
+      .del();
     return app.db('groupp')
       .where({ id })
       .del();
