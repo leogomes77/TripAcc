@@ -22,6 +22,7 @@ test('Test #2 - Tentativa de autenticação password errada', () => {
     .send({ email: mail, password: '67890' }))
     .then((res) => {
       expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Password Incorreta');
     });
 });
 
@@ -31,6 +32,7 @@ test('Test #3 - Tentativa de autenticação com utilizador errado', () => {
     .send({ email: nmail, password: '67890' })
     .then((res) => {
       expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Email Incorreto');
     });
 });
 

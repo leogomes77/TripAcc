@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jwt-simple');
 const bcrypt = require('bcrypt-nodejs');
-// const ValidationError = require('../errors/validationError');
+const ValidationError = require('../errors/validationError');
 
 const secret = 'ipca!DWM@202122';
 
@@ -11,10 +11,7 @@ module.exports = (app) => {
   router.post('/signin', (req, res, next) => {
     app.services.user.findOne({ email: req.body.email })
       .then((user) => {
-        if (!user) {
-          res.status(400).send('Email Incorreto');
-          return;
-        }
+        if (!user) throw new ValidationError('Email Incorreto');
         if (bcrypt.compareSync(req.body.password, user.password)) {
           const payload = {
             id: user.id,
@@ -23,9 +20,7 @@ module.exports = (app) => {
           };
           const token = jwt.encode(payload, secret);
           res.status(200).json({ token });
-        } else {
-          res.status(400).send('Password Incorreta');
-        }
+        } else throw new ValidationError('Password Incorreta');
       }).catch((err) => next(err));
   });
 
