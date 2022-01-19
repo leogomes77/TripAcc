@@ -13,6 +13,8 @@ module.exports = (app) => {
         id: result.id,
         name: result.name,
         email: result.email,
+        password: result.password,
+        contacto: result.contacto,
       }))
       .catch(() => res.status(404).send());
   });

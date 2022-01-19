@@ -3,7 +3,7 @@ const jwt = require('jwt-simple');
 
 const app = require('../../src/app');
 
-const MAIN_ROUTE = '/v1/groups';
+const MAIN_ROUTE = '/v1/despesas';
 
 const mail = `${Date.now()}@ipca.pt`;
 const secret = 'ipca!DWM@202122';
@@ -15,7 +15,7 @@ beforeAll(async () => {
   user.token = jwt.encode(user, secret);
 });
 
-test('Test #1 - Listar Grupos', () => {
+test('Test #1 - Listar Depesas', () => {
   return request(app).get(MAIN_ROUTE)
     .set('authorization', `bearer ${user.token}`)
     .then((res) => {
@@ -24,41 +24,52 @@ test('Test #1 - Listar Grupos', () => {
     });
 });
 
-test('Test #2 - inserir grupo', () => {
+test('Test #2 - Inserir Despesas', () => {
   return request(app).post(MAIN_ROUTE)
     .set('authorization', `bearer ${user.token}`)
-    .send({ name: 'Maldivas', descricao: 'Ida maldivas', moeda: 'euro' })
+    .send({ id_group: 21, amount: 100.00, id_user_paid: 100 })
     .then((res) => {
       expect(res.status).toBe(201);
-      expect(res.body.name).toBe('Maldivas');
+      expect(res.body.amount).toBe(100.00);
     });
 });
 
-test('Test #2.1 - inserir grupo sem nome', (done) => {
+test('Test #2.1 - inserir Despesa sem id_group', (done) => {
   request(app).post(MAIN_ROUTE)
     .set('authorization', `bearer ${user.token}`)
-    .send({ descricao: 'Teste name', moeda: 'Euro' })
+    .send({ amount: 100.00, id_user_paid: 100 })
     .then((res) => {
       expect(res.status).toBe(400);
-      expect(res.body.error).toBe('Nome é um atributo obrigatório');
+      expect(res.body.error).toBe('id_group é um atributo obrigatório');
       done();
     });
 });
 
-test('Test #2.2 - inserir grupo sem moeda', (done) => {
+test('Test #2.2 - inserir grupo sem quantia', (done) => {
   request(app).post(MAIN_ROUTE)
     .set('authorization', `bearer ${user.token}`)
-    .send({ name: 'Viana do Castelo', descricao: 'Teste name' })
+    .send({ id_group: 21, id_user_paid: 100 })
     .then((res) => {
       expect(res.status).toBe(400);
-      expect(res.body.error).toBe('A Moeda é um atributo obrigatório');
+      expect(res.body.error).toBe('A quantia é um atributo obrigatório');
       done();
     });
 });
 
-test('Test #3 - Remover um Grupo', () => {
-  return app.db('groupp')
-    .insert({ name: 'Group to delete', descricao: 'Trip to Chile', moeda: 'euro' }, ['id'])
+test('Test #2.3 - inserir grupo sem id_user_paid', (done) => {
+  request(app).post(MAIN_ROUTE)
+    .set('authorization', `bearer ${user.token}`)
+    .send({ id_group: 21, amount: 100.00 })
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('id_user_paid é um atributo obrigatório');
+      done();
+    });
+});
+
+test('Test #3 - Remover uma despesa', () => {
+  return app.db('group_bills')
+    .insert({ id_group: 12, amount: 100.00, id_user_paid: 100 }, ['id'])
     .then((group) => request(app).delete(`${MAIN_ROUTE}/${group[0].id}`)
       .set('authorization', `bearer ${user.token} `))
     .then((res) => {
@@ -66,66 +77,66 @@ test('Test #3 - Remover um Grupo', () => {
     });
 });
 
-test('Test #4 - Atualizar Grupo', () => {
-  return app.db('groupp')
+test('Test #4 - Atualizar Despesa', () => {
+  return app.db('group_bills')
     .insert({
-      name: 'Ferias Suica', descricao: 'Férias Suica com amigos', moeda: 'Euro',
+      id_group: 12, amount: 100.00, id_user_paid: 100,
     }, ['id'])
     .then((serv) => request(app).put(`${MAIN_ROUTE}/${serv[0].id}`)
       .set('authorization', `bearer ${user.token}`)
       .send({
-        name: 'Ferias Suica Teste', descricao: 'Férias Suica com amigos Teste', moeda: 'Euro',
+        id_group: 12, amount: 120.00, id_user_paid: 100,
       }))
     .then((res) => {
       expect(res.status).toBe(200);
-      expect(res.body.descricao).toBe('Férias Suica com amigos Teste');
+      expect(res.body.amount).toBe(120.00);
     });
 });
 
-test('Test #4 - Atualizar Grupo', () => {
-  return app.db('groupp')
+test('Test #4.1 - Atualizar Despesa sem id_group', () => {
+  return app.db('group_bills')
     .insert({
-      name: 'Ferias Suica', descricao: 'Férias Suica com amigos', moeda: 'Euro',
+      id_group: 12, amount: 100.00, id_user_paid: 100,
     }, ['id'])
     .then((serv) => request(app).put(`${MAIN_ROUTE}/${serv[0].id}`)
       .set('authorization', `bearer ${user.token}`)
       .send({
-        name: 'Ferias Suica Teste', descricao: 'Férias Suica com amigos Teste', moeda: 'Euro',
-      }))
-    .then((res) => {
-      expect(res.status).toBe(200);
-      expect(res.body.descricao).toBe('Férias Suica com amigos Teste');
-    });
-});
-
-test('Test #4.1 - Atualizar Grupo sem moeda', () => {
-  return app.db('groupp')
-    .insert({
-      name: 'Ferias Suica', descricao: 'Férias Suica com amigos', moeda: 'Euro',
-    }, ['id'])
-    .then((serv) => request(app).put(`${MAIN_ROUTE}/${serv[0].id}`)
-      .set('authorization', `bearer ${user.token}`)
-      .send({
-        name: 'Ferias Suica Teste', descricao: 'Férias Suica com amigos Teste',
+        amount: 100.00, id_user_paid: 100,
       }))
     .then((res) => {
       expect(res.status).toBe(400);
-      expect(res.body.error).toBe('A Moeda é um atributo obrigatório');
+      expect(res.body.error).toBe('id_group é um atributo obrigatório');
     });
 });
 
-test('Test #4.2 - Atualizar Grupo sem moeda', () => {
-  return app.db('groupp')
+test('Test #4.2 - Atualizar Despesa sem amount', () => {
+  return app.db('group_bills')
     .insert({
-      name: 'Ferias Suica', descricao: 'Férias Suica com amigos', moeda: 'Euro',
+      id_group: 12, amount: 100.00, id_user_paid: 100,
     }, ['id'])
     .then((serv) => request(app).put(`${MAIN_ROUTE}/${serv[0].id}`)
       .set('authorization', `bearer ${user.token}`)
       .send({
-        descricao: 'Férias Suica com amigos Teste', moeda: 'Euro',
+        id_group: 12, id_user_paid: 100,
       }))
     .then((res) => {
       expect(res.status).toBe(400);
-      expect(res.body.error).toBe('Nome é um atributo obrigatório');
+      expect(res.body.error).toBe('A quantia é um atributo obrigatório');
+    });
+});
+
+test('Test #4.3 - Atualizar Despesa sem id_user_paid', () => {
+  return app.db('group_bills')
+    .insert({
+      id_group: 12, amount: 100.00, id_user_paid: 100,
+    }, ['id'])
+    .then((serv) => request(app).put(`${MAIN_ROUTE}/${serv[0].id}`)
+      .set('authorization', `bearer ${user.token}`)
+      .send({
+        id_group: 12, amount: 120.00,
+      }))
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('id_user_paid é um atributo obrigatório');
     });
 });

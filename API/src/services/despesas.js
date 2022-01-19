@@ -6,9 +6,9 @@ module.exports = (app) => {
   };
 
   const save = async (despesas) => {
-    if (!despesas.id_group) throw new ValidationError('Nome é um atributo obrigatório');
-    if (!despesas.amount) throw new ValidationError('A Moeda é um atributo obrigatório');
-    if (!despesas.id_user_paid) throw new ValidationError('A Moeda é um atributo obrigatório');
+    if (!despesas.id_group) throw new ValidationError('id_group é um atributo obrigatório');
+    if (!despesas.amount) throw new ValidationError('A quantia é um atributo obrigatório');
+    if (!despesas.id_user_paid) throw new ValidationError('id_user_paid é um atributo obrigatório');
 
     return app.db('group_bills').insert(despesas, '*');
   };
@@ -18,6 +18,9 @@ module.exports = (app) => {
   };
 
   const update = (id, despesas) => {
+    if (!despesas.id_group) throw new ValidationError('id_group é um atributo obrigatório');
+    if (!despesas.amount) throw new ValidationError('A quantia é um atributo obrigatório');
+    if (!despesas.id_user_paid) throw new ValidationError('id_user_paid é um atributo obrigatório');
     return app.db('group_bills')
       .where({ id })
       .update(despesas, '*');

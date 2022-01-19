@@ -4,6 +4,7 @@ exports.up = (knex) => {
     t.string('name').notNull();
     t.string('email').notNull();
     t.string('password');
+    t.string('contacto');
   });
 };
 
