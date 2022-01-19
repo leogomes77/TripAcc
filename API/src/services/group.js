@@ -17,6 +17,9 @@ module.exports = (app) => {
   };
 
   const update = (id, group) => {
+    if (!group.name) throw new ValidationError('Nome é um atributo obrigatório');
+    if (!group.moeda) throw new ValidationError('A Moeda é um atributo obrigatório');
+
     return app.db('groupp')
       .where({ id })
       .update(group, '*');

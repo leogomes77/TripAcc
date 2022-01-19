@@ -3,7 +3,6 @@ const ValidationError = require('../errors/validationError');
 
 module.exports = (app) => {
   const findAll = (filter = {}) => {
-    console.log('entrou');
     return app.db('users').where(filter).select();
   };
 
